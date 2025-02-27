@@ -35,7 +35,9 @@ class Enemy(pygame.sprite.Sprite):
 
         # DEBUG: Stampa in console la posizione iniziale
         print(side)
-        
+
+    def reset(self):
+        self.speed = 1.5
 
     def update(self):
         # Calcola la direzione verso il player

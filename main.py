@@ -1,5 +1,6 @@
 import pygame
 import sys
+import UI
 import Enemy
 import Bullet
 import Player
@@ -21,12 +22,16 @@ clock = pygame.time.Clock()
 running = True
 background = pygame.transform.scale(pygame.image.load("background-1.png"), (2000, 2000))
 
+game_state = "start_menu"
+game_over = True
+ui = UI.UI(screen)
+
 all_sprites = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 
 # Creiamo il player
-player = Player.Player(screen) 
+player = Player.Player(screen)
 all_sprites.add(player)
 
 # Creiamo i nemici
@@ -35,7 +40,7 @@ for _ in range(NUM_ENEMIES_LVL1):
     all_sprites.add(enemy)
     enemy_group.add(enemy)
 
-score = 0 
+score = 0
 shoot_delay = 500  # Millisecondi tra uno sparo e l'altro quando si tiene premuto
 last_shot = pygame.time.get_ticks()  # Tempo dell'ultimo sparo
 
@@ -45,49 +50,64 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if ui.start:
+                game_state = "game"
+                game_over = False
+            if ui.quit:
+                running = False
             
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-
+            if game_state == "game" and event.key == pygame.K_SPACE:
                 bullet = Bullet.Bullet(player.rect.centerx, player.rect.top, enemy)
                 all_sprites.add(bullet)
                 bullet_group.add(bullet)
 
-    # Update delle sprite
-    all_sprites.update()
+    if game_state == "start_menu":
+        ui.draw_start_menu()
 
-    # Collisioni tra proiettili e nemici
-    hits = pygame.sprite.groupcollide(enemy_group, bullet_group, True, True)
-    for hit in hits:
-        score += 10
-        enemy = Enemy.Enemy(player, tick)
-        all_sprites.add(enemy)
-        enemy_group.add(enemy)
+    if game_state == "game_over":
+        ui.draw_game_over_screen()
 
-    # Collisioni tra player e nemici
-    hits = pygame.sprite.spritecollide(player, enemy_group, True)
-    for hit in hits:
-        player.health -= 1
-        enemy = Enemy.Enemy(player, tick)
-        all_sprites.add(enemy)
-        enemy_group.add(enemy)
-        if player.health <= 0:
-            running = False
+    if game_state == "game":
+        # Update delle sprite
+        all_sprites.update()
 
-    # Disegno delle sprite
-    screen.fill(BLACK)
-    screen.blit(background, (-500, -500))
-    all_sprites.draw(screen)
-    
-    # Visualizzazione punteggio e vite
-    font = pygame.font.SysFont("Arial", 20)
-    score_text = font.render(f"Punteggio: {score}", True, WHITE)
-    health_text = font.render(f"Vite: {player.health}", True, WHITE)
-    screen.blit(score_text, (10, 10))
-    screen.blit(health_text, (10, 40))
-    
-    pygame.display.flip()
-    clock.tick(FPS)
+        # Collisioni tra proiettili e nemici
+        hits = pygame.sprite.groupcollide(enemy_group, bullet_group, True, True)
+        for hit in hits:
+            score += 10
+            enemy = Enemy.Enemy(player, tick)
+            all_sprites.add(enemy)
+            enemy_group.add(enemy)
+
+        # Collisioni tra player e nemici
+        hits = pygame.sprite.spritecollide(player, enemy_group, True)
+        for hit in hits:
+            player.health -= 1
+            enemy = Enemy.Enemy(player, tick)
+            all_sprites.add(enemy)
+            enemy_group.add(enemy)
+            if player.health <= 0:
+                game_over = True
+                game_state = "game_over"
+                ui.start = False
+
+        # Disegno delle sprite
+        screen.fill(BLACK)
+        screen.blit(background, (-500, -500))
+        all_sprites.draw(screen)
+
+        # Visualizzazione punteggio e vite
+        font = pygame.font.SysFont("Arial", 20)
+        score_text = font.render(f"Punteggio: {score}", True, WHITE)
+        health_text = font.render(f"Vite: {player.health}", True, WHITE)
+        screen.blit(score_text, (10, 10))
+        screen.blit(health_text, (10, 40))
+
+        pygame.display.flip()
+        clock.tick(FPS)
 
 pygame.quit()
 sys.exit()
