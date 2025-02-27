@@ -27,6 +27,9 @@ class Player(pygame.sprite.Sprite):
         self.speed = 4  # Velocità aumentata
         self.health = 10
 
+    def reset(self):
+        self.health = 10
+
     def update(self):
 
         keys = pygame.key.get_pressed()
