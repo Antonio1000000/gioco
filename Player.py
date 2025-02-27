@@ -1,4 +1,5 @@
 import pygame
+import os.path
 
 BLUE = (0, 0, 255)
 WIDTH, HEIGHT = 800, 600
@@ -8,16 +9,16 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.screen = screen
 
-        self.image_up = pygame.image.load("sprite_Player/Player_run_left.png").convert_alpha()
+        self.image_up = pygame.image.load(os.path.join("sprite_Player", "Player_run_left.png")).convert_alpha()
         self.image_up = pygame.transform.scale(self.image_up, (32, 32))
 
-        self.image_down = pygame.image.load("sprite_Player/Player_run_right.png").convert_alpha()
+        self.image_down = pygame.image.load(os.path.join("sprite_Player", "Player_run_right.png")).convert_alpha()
         self.image_down = pygame.transform.scale(self.image_down, (32, 32))
 
-        self.image_left = pygame.image.load("sprite_Player/player_left.png").convert_alpha()
+        self.image_left = pygame.image.load(os.path.join("sprite_Player", "player_run_left.png")).convert_alpha()
         self.image_left = pygame.transform.scale(self.image_left, (32, 32))
 
-        self.image_right = pygame.image.load("sprite_Player/Player_run_right.png").convert_alpha()
+        self.image_right = pygame.image.load(os.path.join("sprite_Player", "Player_run_right.png")).convert_alpha()
         self.image_right = pygame.transform.scale(self.image_right, (32, 32))
         self.image = self.image_up
         
